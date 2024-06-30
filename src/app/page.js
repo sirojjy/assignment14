@@ -4,42 +4,32 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { fetchFoods } from '../utils/api';
 
+
 const FoodList = () => {
   const [foods, setFoods] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchFoods()
-      .then(data => {
-        if (Array.isArray(data)) {
-          setFoods(data);
-        } else {
-          throw new Error('Data format is incorrect');
-        }
-      })
-      .catch(err => setError(err.message))
-      .finally(() => setLoading(false));
+    fetchFoods().then(data => setFoods(data));
   }, []);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (!foods.length) return <div>Loading...</div>;
 
   return (
     <div className="container p-4 mx-auto">
-      <h1 className="mb-4 text-2xl font-bold">List Makanan</h1>
-      <ul className="grid grid-cols-1 gap-4 md:grid-cols-3">
+      <h1 className="mb-4 text-2xl font-bold">Daftar Makanan</h1>
+      <div className="grid grid-cols-3 gap-4">
         {foods.map(food => (
-          <li key={food.id} className="overflow-hidden bg-white rounded-lg shadow-md">
-            <Link href={`/makanan/${food.id}`}>
-              <a className="block">
-                <img src={food.imageUrl} alt={food.name} className="object-cover w-full h-48" />
-                <p className="p-4 text-lg font-semibold">{food.name}</p>
-              </a>
-            </Link>
-          </li>
+          <Link key={food.id} href={`/makanan/${food.id}`}>
+            <a className="block p-4 border border-gray-300 rounded hover:shadow-lg">
+              <img src={food.imageUrl} alt={food.name} className="object-cover w-full h-48 mb-2"/>
+              <h2 className="text-lg font-bold">{food.name}</h2>
+            </a>
+          </Link>
         ))}
-      </ul>
+      </div>
+      <Link href="/makanan/buat-makanan">
+        <a className="inline-block px-4 py-2 mt-4 text-white bg-blue-500 rounded">Buat Makanan Baru</a>
+      </Link>
     </div>
   );
 };
